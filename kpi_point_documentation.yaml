@@ -1,0 +1,1085 @@
+openapi: 3.0.0
+servers:
+  - description: Staging server
+    url: https://be.stag-rama.my.id
+info:
+  title: KPI Assessment KPI
+  version: 1.0.0
+
+paths:
+  /api/v1/employees/{employee_id}/assessment:
+    get:
+      tags:
+        - Read Assessment
+      summary: read all assessment
+      operationId: readAllAssessment
+      description: 
+        By passing in the appropriate options, you can read the employee
+        assessment
+      parameters:
+        - in: path
+          name: employee_id
+          description: employee who have assessment
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: page
+          description: identification pagination
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: type
+          description: the type based on time
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Read assessment successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetData'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - Create Assessment
+      summary: create an assessment
+      operationId: createAssessment
+      description: Create an employee's KPI assessment
+      parameters: 
+        - in: path
+          name: employee_id
+          description: employee who have assessment
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: item created
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostData'
+        description: Inventory item to add
+  /api/v1/employees/{employee_id}/assessment/{kpi_id}:
+    get:
+      tags:
+        - Read an Assessment
+      summary: read an assessment
+      operationId: readOneAssessment
+      description: 
+        By passing in the appropriate options, you can read the employee
+        assessment
+      parameters:
+        - in: path
+          name: employee_id
+          description: employee who have assessment
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: kpi_id
+          description: KPI which show up
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Read assessment successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFirstData'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+    patch:
+      tags:
+        - Update an Assessment
+      summary: update an assessment
+      operationId: updateOneAssessment
+      description: 
+        Update an employee's KPI assessment
+      parameters:
+        - in: path
+          name: employee_id
+          description: employee who have assessment
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: kpi_id
+          description: KPI which show up
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Update assessment successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchData'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+
+  /api/v1/employees/{employee_id}/assessment-by-periode/{periode}:
+    get:
+      tags:
+        - Read an Assessment by Periode
+      summary: read an assessment by periode
+      operationId: readOneAssessmentByPeriode
+      description: 
+        By passing in the appropriate options, you can read the employee
+        assessment
+      parameters:
+        - in: path
+          name: employee_id
+          description: employee who have assessment
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: periode
+          description: date that assessment assign
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Read assessment successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFirstData'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    GetData:
+      type: object
+      required:
+        - data
+        - links
+        - meta
+        - data_set
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Template'
+        links:
+          $ref: '#/components/schemas/Links'
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data_set:
+          $ref: '#/components/schemas/DataSet'
+    PostData:
+      required:
+        - date
+        - template
+      properties:
+        originalData:
+          $ref: '#/components/schemas/OriginalData'
+        date:
+          $ref: '#/components/schemas/Date'
+        template:
+          $ref: '#/components/schemas/TemplatePost'
+        errors:
+          type: object
+          properties:
+            errors:
+              type: object
+              example: {}
+    GetFirstData:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Template'
+    PatchData:
+      required:
+        - date
+        - template
+      properties:
+        originalData:
+          $ref: '#/components/schemas/OriginalData'
+        date:
+          type: string
+          format: date-time
+          example: '2022-04-23 00:00:00'
+        comment:
+          type: string
+          example: 'test notes'
+        template:
+          $ref: '#/components/schemas/TemplatePatch'
+        errors:
+          type: object
+          properties:
+            errors:
+              type: object
+              example: {}
+    Template:
+      required:
+        - id
+        - name
+        - comment
+        - date
+        - employee
+        - weight
+        - target
+        - score
+        - score_percentage
+        - scorer
+        - groups
+      properties:
+        id:
+          type: integer
+          example: 83
+        name:
+          type: string
+          example: Pengawas
+        comment:
+          type: string
+          example: 'test notes'
+        date:
+          type: string
+          format: date-time
+          example: '2022-05-31 00:00:00'
+        employee:
+          $ref: '#/components/schemas/Employee'
+        weight:
+          type: string
+          example: "40.000000"
+        target:
+          type: string
+          example: "25.0000"
+        score:
+          type: string
+          example: "18.0000"
+        score_percentage:
+          type: string
+          example: "28.800000"
+        scorer:
+          $ref: '#/components/schemas/Scorer'
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/Groups'
+      type: object
+    Employee:
+      required:
+        - id
+        - code
+        - tax_identification_number
+        - name
+        - address
+        - city
+        - state
+        - country
+        - zip_code
+        - latitude
+        - longitude
+        - phone
+        - phone_cc
+        - email
+        - bpjs
+        - resign_date
+        - personal_identity
+        - last_education
+        - birth_date
+        - birth_place
+        - employee_gender_id
+        - employee_marital_status_id
+        - married_with
+        - employee_religion_id
+        - employee_group_id
+        - employee_status_id
+        - employee_job_location_id
+        - join_date
+        - job_title
+        - kpi_template_id
+        - notes
+        - daily_transport_allowance
+        - functional_allowance
+        - communication_allowance
+        - branch_id
+        - user_id
+        - created_by
+        - updated_by
+        - archived_by
+        - created_at
+        - updated_at
+        - archived_at
+        - label
+      properties:
+        id:
+          type: integer
+          example: 6
+        code:
+          type: string
+          example: null
+        tax_identification_number:
+          type: string
+          example: null
+        name:
+          type: string
+          example: A
+        address:
+          type: string
+          example: null
+        city:
+          type: string
+          example: null
+        state:
+          type: string
+          example: null
+        country:
+          type: string
+          example: null
+        zip_code:
+          type: string
+          example: null
+        latitude:
+          type: number
+          example: null
+        longitude:
+          type: number
+          example: null
+        phone:
+          type: string
+          example: null
+        phone_cc:
+          type: string
+          example: null
+        email:
+          type: string
+          format: email
+          example: null
+        bpjs:
+          type: string
+          example: null
+        resign_date:
+          type: string
+          format: date-time
+          example: null
+        personal_identity:
+          type: string
+          example: null
+        last_education:
+          type: string
+          example: null
+        birth_Date:
+          type: string
+          format: date
+          example: null
+        birth_place:
+          type: string
+          example: null
+        employee_gender_id:
+          type: string
+          example: null
+        employee_marital_status_id:
+          type: string
+          example: null
+        married_with:
+          type: string
+          example: null
+        employee_religion_id:
+          type: string
+          example: null
+        employee_group_id:
+          type: string
+          example: null
+        employee_status_id:
+          type: string
+          example: null
+        employee_job_location_id:
+          type: string
+          example: null
+        join_date:
+          type: string
+          format: date-time
+          example: null
+        job_title:
+          type: string
+          example: null
+        kpi_template_id:
+          type: string
+          example: '3'
+        notes:
+          type: string
+          example: null
+        daily_transport_allowance:
+          type: number
+          example: 0
+        functional_allowance:
+          type: number
+          example: 0
+        communication_allowance:
+          type: number
+          example: 0
+        branch_id:
+          type: string
+          example: null
+        user_id:
+          type: string
+          example: '1'
+        created_by:
+          type: string
+          example: '1'
+        updated_by:
+          type: string
+          example: '2'
+        archived_by:
+          type: string
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: '2022-04-11 10:01:15'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2022-04-18 15:34:35'
+        archived_at:
+          type: string
+          example: null
+        label:
+          type: string
+          example: 'A'
+    Scorer:
+      required:
+        - id
+        - name
+        - first_name
+        - last_name
+        - address
+        - phone
+        - email
+        - created_at
+        - updated_at
+        - branch_id
+        - warehouse_id
+        - full_name
+      properties:
+        id:
+          type: integer
+          example: 2
+        name:
+          type: string
+          example: 'user'
+        first_name:
+          type: string
+          example: 'user'
+        last_name:
+          type: string
+          example: 'user'
+        address:
+          type: string
+          example: null
+        phone:
+          type: string
+          example: null
+        email:
+          type: string
+          format: email
+          example: 'user@point'
+        created_at:
+          type: string
+          format: date-time
+          example: '2022-04-23 11:48:34'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2022-04-23 11:48:34'
+        branch_id:
+          type: string
+          example: null
+        warehouse_id:
+          type: string
+          example: null
+        full_name:
+          type: string
+          example: 'user user'
+    Groups:
+      required:
+        - id
+        - kpi_id
+        - name
+        - weight
+        - target
+        - score
+        - score_percentage
+        - indicators
+      properties:
+        id:
+          type: integer
+          example: 175
+        kpi_id:
+          type: string
+          example: '83'
+        name:
+          type: string
+          example: 'FUNGSI MANAJERIAL'
+        weight:
+          type: number
+          example: 40
+        target:
+          type: number
+          example: 25
+        score:
+          type: number
+          example: 18
+        score_percentage:
+          type: number
+          example: 28.800000000000004
+        indicators:
+          type: array
+          items:
+            $ref: '#/components/schemas/Indicators'
+    Indicators: 
+      required:
+        - id
+        - kpi_group_id
+        - name
+        - weight
+        - target
+        - score
+        - notes
+        - comment
+        - score_percentage
+        - score_description
+        - automated_code
+        - attachment
+        - scores
+      properties:
+        id:
+          type: integer
+          example: 863
+        kpi_group_id:
+          type: string
+          example: '175'
+        name:
+          type: string
+          example: 'Tercapainya Ketertiban dan kedisiplinan bawahan'
+        weight:
+          type: string
+          example: '8.00'
+        target:
+          type: string
+          example: '5'
+        score:
+          type: string
+          example: '5'
+        notes:
+          type: string
+          example: 'There are many variations of passages of Lorem Ipsum available'
+        comment:
+          type: string
+          example: 'There are many variations of passages of Lorem Ipsum available'
+        score_percentage:
+          type: string
+          example: '8.00'
+        score_description:
+          type: string
+          example: 'selalu mencapai target produksi'
+        automated_code:
+          type: string
+          example: null
+        attachment:
+          type: string
+          example: 'Flowchart Penjualan (1).pdf'
+        scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Scores'
+    Scores: 
+      required:
+        - id
+        - kpi_indicator_id
+        - description
+        - score
+        - created_at
+        - updated_at
+        - status
+      properties:
+        id:
+          type: integer
+          example: 4311
+        kpi_indicator_id:
+          type: string
+          example: '863'
+        description:
+          type: string
+          example: 'selalu tidak mencapai target produksi'
+        score:
+          type: string
+          example: '1'
+        created_at:
+          type: string
+          format: date-time
+          example: '2022-04-22T09:41:48.000000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2022-04-22T09:42:05.000000Z'
+        status:
+          type: string
+          example: 'COMPLETED'
+    Links:
+      required:
+        - first
+        - next
+        - prev
+      properties:
+        first:
+          type: string
+          format: url
+          example: 'https://be.stag-rama.my.id/api/v1/human-resource/employee/employees/6/assessment?page=1'
+        next:
+          type: string
+          format: url
+          example: null
+        prev:
+          type: string
+          format: url
+          example: null
+    Meta:
+      required:
+        - current_page
+        - from
+        - last_page
+        - path
+        - per_page
+        - to
+        - total
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        from:
+          type: integer
+          example: 1
+        last_page:
+          type: integer
+          example: 1
+        paths:  
+          type: string
+          format: url
+          example: 'https://be.stag-rama.my.id/api/v1/human-resource/employee/employees/6/assessment'
+        per_page:
+          type: integer
+          example: 15
+        to:
+          type: integer
+          example: 1
+        total:
+          type: integer
+          example: 1
+    DataSet:
+      required:
+        - dates
+        - scores
+      properties:
+        dates: 
+          type: array
+          items:
+            type: string
+          example: ["31May2022"]
+        scores: 
+          type: array
+          items:
+            type: string
+          example: ["28.80"]
+    OriginalData:
+      required:
+        - date
+        - template
+      properties:
+        date:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date-time
+              example: '2022-04-26 00:00:00'
+            end:
+              type: string
+              format: date-time
+              example: '2022-04-26 23:59:59'
+        template:
+          type: object
+          properties:
+            groups:
+              type: array
+              items: 
+                type: object
+              example: []
+    Date:
+      required:
+        - start
+        - end 
+      properties:
+        start:
+          type: string
+          format: date-time
+          example: '2022-04-26 00:00:00'
+        end:
+          type: string
+          format: date-time
+          example: '2022-04-26 23:59:59'
+    TemplatePost:
+      required:
+        - id
+        - name
+        - created_by
+        - updated_by
+        - archived_by
+        - created_at
+        - updated_at
+        - archived_at
+        - target
+        - weight
+        - groups
+      properties:
+        id:
+          type: integer
+          example: 3
+        name:
+          type: string
+          example: 'PENGAWAS'
+        comment:
+          type: string
+          example: 'test notes'
+        created_by:
+          type: string
+          example: '2'
+        updated_by:
+          type: string
+          example: '2'
+        archived_by:
+          type: string
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: '2022-04-07 16:51:11'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2022-04-07 16:51:35'
+        archived_at:
+          type: string
+          example: null
+        target:
+          type: integer
+          example: 25
+        weight:
+          type: string
+          example: '40.00'
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupsPost'
+    GroupsPost:
+      required:
+        - id
+        - kpi_template_id
+        - name
+        - created_by
+        - updated_by
+        - created_at
+        - updated_at
+        - target
+        - weight
+        - indicators
+      properties:
+        id:
+          type: integer
+          example: 7
+        kpi_template_id:
+          type: string
+          example: '3'
+        name:
+          type: string
+          example: 'FUNGSI MANAJERIAL'
+        created_by:
+          type: string
+          example: '2'
+        updated_by:
+          type: string
+          example: '2'
+        created_at:
+          type: string
+          format: date-time
+          example: '2022-04-07 16:51:11'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2022-04-07 16:51:11'
+        target:
+          type: integer
+          example: 25
+        weight:
+          type: integer
+          example: 40
+        indicators:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndicatorsPost'
+    IndicatorsPost: 
+      required:
+        - id
+        - kpi_template_group_id
+        - name
+        - weight
+        - target
+        - automated_code
+        - created_by
+        - updated_by
+        - created_at
+        - updated_at
+        - scores
+      properties:
+        id:
+          type: integer
+          example: 31
+        kpi_group_id:
+          type: string
+          example: '7'
+        name:
+          type: string
+          example: 'Tercapainya Ketertiban dan kedisiplinan bawahan'
+        weight:
+          type: string
+          example: '8.00'
+        target:
+          type: string
+          example: '5'
+        automated_code:
+          type: string
+          example: null
+        created_by:
+          type: string
+          example: '2'
+        updated_by:
+          type: string
+          example: '2'
+        created_at:
+          type: string
+          format: date-time
+          example: '2022-04-07 16:51:11'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2022-04-07 16:51:11'
+        scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScoresPost'
+        selected:
+          type: object
+          properties:
+            notes:
+              type: string
+              example: 'test notes'
+    ScoresPost: 
+      required:
+        - id
+        - kpi_template_indicator_id
+        - description
+        - score
+        - created_by
+        - updated_by
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+          example: 4311
+        kpi_indicator_id:
+          type: string
+          example: '863'
+        description:
+          type: string
+          example: 'selalu tidak mencapai target produksi'
+        score:
+          type: string
+          example: '1'
+        created_by:
+          type: string
+          example: '2'
+        updated_by:
+          type: string
+          example: '2'
+        created_at:
+          type: string
+          format: date-time
+          example: '2022-04-22T09:41:48.000000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2022-04-22T09:42:05.000000Z'
+    TemplatePatch:
+      required:
+        - id
+        - name
+        - date
+        - employee
+        - weight
+        - target
+        - score
+        - score_percentage
+        - scorer
+        - groups
+      properties:
+        id:
+          type: integer
+          example: 83
+        name:
+          type: string
+          example: Pengawas
+        date:
+          type: string
+          format: date-time
+          example: '2022-05-31 00:00:00'
+        employee:
+          $ref: '#/components/schemas/Employee'
+        weight:
+          type: string
+          example: "40.000000"
+        target:
+          type: string
+          example: "25.0000"
+        score:
+          type: string
+          example: "18.0000"
+        score_percentage:
+          type: string
+          example: "28.800000"
+        scorer:
+          $ref: '#/components/schemas/Scorer'
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupsPatch'
+      type: object
+    GroupsPatch:
+      required:
+        - id
+        - kpi_id
+        - name
+        - weight
+        - target
+        - score
+        - score_percentage
+        - indicators
+      properties:
+        id:
+          type: integer
+          example: 175
+        kpi_id:
+          type: string
+          example: '83'
+        name:
+          type: string
+          example: 'FUNGSI MANAJERIAL'
+        weight:
+          type: number
+          example: 40
+        target:
+          type: number
+          example: 25
+        score:
+          type: number
+          example: 18
+        score_percentage:
+          type: number
+          example: 28.800000000000004
+        indicators:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndicatorsPatch'
+    IndicatorsPatch: 
+      required:
+        - id
+        - kpi_group_id
+        - name
+        - weight
+        - target
+        - score
+        - notes
+        - comment
+        - score_percentage
+        - score_description
+        - automated_code
+        - attachment
+        - scores
+      properties:
+        id:
+          type: integer
+          example: 863
+        kpi_group_id:
+          type: string
+          example: '175'
+        name:
+          type: string
+          example: 'Tercapainya Ketertiban dan kedisiplinan bawahan'
+        weight:
+          type: string
+          example: '8.00'
+        target:
+          type: string
+          example: '5'
+        score:
+          type: string
+          example: '5'
+        notes:
+          type: string
+          example: 'There are many variations of passages of Lorem Ipsum available'
+        comment:
+          type: string
+          example: 'There are many variations of passages of Lorem Ipsum available'
+        score_percentage:
+          type: string
+          example: '8.00'
+        score_description:
+          type: string
+          example: 'selalu mencapai target produksi'
+        automated_code:
+          type: string
+          example: null
+        attachment:
+          type: string
+          example: 'Flowchart Penjualan (1).pdf'
+        scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Scores'
+        selected:
+          type: object
+          properties:
+            notes:
+              type: string
+              example: 'test notes'
+          
+          
